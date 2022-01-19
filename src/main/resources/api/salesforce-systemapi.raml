@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: Salesforce-SystemAPI
+
+description: This is a Salesforce System API
+mediaType: 
+  - application/json
+protocols: [HTTP, HTTPS]
+
+/employees:
+  post:
+    description: This is used to Post latest Employees Data
+    body:
+      application/json:
+        example:
+          !include examples/employeeExample.json
+          
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+                {
+                  "message": "Employees Created Successfully"
+                }         
+      400:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Bad Request"
+                }
+      404:
+        body:
+          application/json: 
+            example: |
+              {
+                "message": "Error not found"
+              }

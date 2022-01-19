@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="salesforce-implementation-suite.xml" />
+	<munit:test name="Post_Employees_To_Salesforce_Flow-test" doc:id="b8f2794e-dd73-44a8-a9d1-5b8ac420d2a4" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="0f1790ee-94de-41b4-8435-526a726f1f3c" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to Post_Employees_To_Salesforce_Flow" doc:id="64eda08e-913a-45ff-97bf-434cc75a0a97" name="Post_Employees_To_Salesforce_Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="b7faa1dc-ec47-4dbb-88da-c589a422d28b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import PostEmployeesToSalesforceFlowtest::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify systemapi-salesforceBatch_Job" doc:id="1934495a-9f01-42ed-8bb6-363b31d7c1f9" processor="batch:job" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="62215987-b97f-4b2c-8c0a-0994bd166071" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify JSON TO JAVA" doc:id="3e1cfa2d-f5da-4ee9-8174-a0df08f2bda3" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e65931e7-3df8-4b71-afd4-980c455eba41" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="Post_Employees_To_Salesforce_Flow" doc:id="7c7604f1-0c7d-4686-87ea-da22756c8b3d" >
+		<logger level="INFO" doc:name="Start Logger" doc:id="65c8d380-e3eb-4dee-874c-539931a1a0f6" message="#[payload]"/>
+		<ee:transform doc:name="JSON TO JAVA" doc:id="e65931e7-3df8-4b71-afd4-980c455eba41" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	Name: (payload01.employee_first_name default "") ++" " ++(payload01.employee_last_name default ""),
+	Employee_ID__c: payload01.employee_id,
+	EMPLOYEE_ADDRESS__c: payload01.employee_address,
+	EMPLOYEE_DEPT_NAME__c: payload01.employee_dept_name,
+	EMPLOYEE_SALARY__c: payload01.employee_salary,
+	SYSTEM_TIMESTAMP__c: payload01.system_timestamp
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="systemapi-salesforceBatch_Job" doc:id="62215987-b97f-4b2c-8c0a-0994bd166071" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="422068ba-b0b6-4658-8add-a0b57629f14e" >
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="664daed2-5ab3-454d-a92a-a532a4843b9d" size="3">
+						<salesforce:create doc:name="Create Employees" doc:id="3ab21158-39f1-4ca8-8b06-07c0b6ba267e" type="Employee__c" config-ref="Salesforce_Config"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="End Logger" doc:id="e8be9505-c08a-40ef-8ab3-1611d8017be7" />
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>

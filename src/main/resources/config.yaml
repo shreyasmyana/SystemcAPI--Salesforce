@@ -1,0 +1,7 @@
+http:
+  port: "8082"
+  
+sfdc:
+  username: "shreyas.a.myana@apisero.com"
+  password: ""
+  token: "uJdRFWI26FtdpjnXhzlgtMhi"

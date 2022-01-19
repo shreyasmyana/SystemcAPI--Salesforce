@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="salesforce-interface-suite.xml" />
+	<munit:test name="post:\employees:application\json:salesforce-systemapi-config-test" doc:id="102521b9-abc1-4591-ae80-bcbe35780be8" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Flow Reference" doc:id="65fe1743-3807-4608-a96d-72eb09cefac0" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="df264501-3075-40b1-9559-8c616662a5e8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\mock_payload.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="batchJobInstanceId" value="#[readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\mock_variable_1.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="40bb51fe-15c7-4d41-9248-0ac2e382fa34" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postemployeesapplicationjsonsalesforcesystemapiconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\employees:application\json:salesforce-systemapi-config" doc:id="368d1bdb-2df1-4a68-baa1-2b9fe5aabdd4" name="post:\employees:application\json:salesforce-systemapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="4359e8e0-6ca1-4383-9532-508ebf57cc67" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postemployeesapplicationjsonsalesforcesystemapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="b3979b5a-553f-4367-a126-c9d50915313a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="651f9730-6f05-41d7-b522-79edab6e23b2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+<munit:test name="oracle-interface-suiteTest-BADREQUEST" doc:id="fe4fcd49-8037-447a-8976-0eded3f6c5db" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT BAD REQUEST" doc:id="aab060b6-fd63-46a9-a96a-8396eb38635a" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-systemapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="63bf6307-1414-4c1a-ab6f-5141b4feb9be" name="salesforce-systemapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="05f228cd-726f-4bec-b373-130d208eaa19" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="oracle-interface-suiteTest-NOTFOUND" doc:id="52e5cbd1-5932-4d66-ae89-7737edae2f99" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT NOT FOUND" doc:id="c0e670f6-0f37-453b-ba32-f0bd603e3cf8" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-systemapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="757edb79-91b4-4576-bbd9-abd390bc87ea" name="salesforce-systemapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="938f2248-76a8-4972-90eb-66aafa57c57e" actual="#[vars.httpStatus]" expected='#[{message: "Resource not found"}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="oracle-interface-suiteTest-MTDNOTALLWD" doc:id="d3a74460-b163-4f44-860f-c8b59e34bc62" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT MTD NOT ALLWD" doc:id="04694814-99c2-45b0-a53c-c7ea901601b1" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-systemapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="ddd91780-d834-4dfb-9341-6fa40fc353f8" name="salesforce-systemapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="a5136b78-8787-42d8-b237-ebe7da5a541d" actual="#[vars.httpStatus]" expected='#[{message: "Method not allowed"}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="oracle-interface-suiteTest-NOTACCEPTABLE" doc:id="3cc87435-9d5d-4008-a683-db1dc1c39996" description="Test" expectedErrorType="APIKIT:NOT_ACCEPTABLE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT MTD NOT ALLWD" doc:id="36a65f3e-a2dc-45d5-ade1-529e68cc7376" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-systemapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="2a4a69a5-2a7c-44ec-8e06-7b78452a8dbd" name="salesforce-systemapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="af725bd4-6cb5-4f91-b24a-f13e31433bae" actual="#[vars.httpStatus]" expected='#[{message: "Not acceptable"}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="oracle-interface-suiteTest-UNSUPPORTEDMEDIATYPE" doc:id="05d7b3ad-e2e7-4191-a73d-9787557f92df" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when APIKIT MTD NOT ALLWD" doc:id="2ddcc033-b209-4d6d-b0a3-1bd568eb73d1" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-systemapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			
+
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="15bc991d-00be-4f6b-b801-87b53e1d9742" name="salesforce-systemapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="1f8af0f8-b909-4b35-9baa-c38c9b777c7f" actual="#[vars.httpStatus]" expected='#[{message: "Unsupported media type"}]'/>
+		</munit:validation>
+	</munit:test>
+	
+	
+	<munit:test name="Post_Employees_To_Salesforce_Flow-test-1" doc:id="147328e0-d163-4c0c-b866-6bca7cf36d95" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="fd37099b-c4b1-4f3c-868e-d73d40452fda" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://PostEmployeesToSalesforceFlowtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to Post_Employees_To_Salesforce_Flow" doc:id="7190e4cd-5e78-4f90-9bf5-3bdc178d46f0" name="Post_Employees_To_Salesforce_Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="f938170c-1a5c-410b-ac82-8916aed68abf" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import PostEmployeesToSalesforceFlowtest::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify systemapi-salesforceBatch_Job" doc:id="ca533a74-e49b-4362-8be0-fab22c533daf" processor="batch:job" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="62215987-b97f-4b2c-8c0a-0994bd166071" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify JSON TO JAVA" doc:id="25cb484c-1698-4aa3-aafe-3c1cebe0a4e1" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e65931e7-3df8-4b71-afd4-980c455eba41" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>
